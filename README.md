@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Delish - Google Maps List Paywall SaaS
 
-## Getting Started
+A lightweight SaaS that lets creators put a paywall in front of their Google Maps List.
 
-First, run the development server:
+## Quick Start
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. **Environment Setup**
+   Create a `.env.local` file with the following variables:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+   ```env
+   # Database
+   DATABASE_URL="postgresql://username:password@localhost:5432/delish"
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+   # Clerk Authentication
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+   CLERK_SECRET_KEY=sk_test_...
+   NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+   NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+   NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
+   NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboard
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+   # Stripe
+   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+   STRIPE_SECRET_KEY=sk_test_...
+   STRIPE_WEBHOOK_SECRET=whsec_...
+   STRIPE_CONNECT_CLIENT_ID=ca_...
 
-## Learn More
+   # Email
+   RESEND_API_KEY=re_...
 
-To learn more about Next.js, take a look at the following resources:
+   # Google Maps (for Hosted Mirror)
+   NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=...
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+   # JWT
+   JWT_SECRET=your-jwt-secret-key
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   # App
+   NEXT_PUBLIC_APP_URL=http://localhost:3000
+   ```
 
-## Deploy on Vercel
+2. **Database Setup**
+   ```bash
+   npx prisma migrate dev
+   npx prisma generate
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+3. **Install Dependencies**
+   ```bash
+   npm install
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+4. **Run Development Server**
+   ```bash
+   npm run dev
+   ```
+
+## Features
+
+- **Creator Dashboard**: Manage lists, view analytics, handle payouts
+- **Public Landing Pages**: Beautiful list previews with checkout
+- **Stripe Integration**: Secure payments with Connect for creator payouts
+- **Unlock System**: JWT-based access tokens for purchased content
+- **Email Notifications**: Transactional emails for purchases and access
+- **Hosted Mirror**: Optional embedded maps for better user experience
+
+## Tech Stack
+
+- **Frontend**: Next.js 14, React Server Components, Tailwind CSS, shadcn/ui
+- **Authentication**: Clerk
+- **Payments**: Stripe Checkout + Connect
+- **Database**: PostgreSQL with Prisma ORM
+- **Email**: Resend
+- **Maps**: Google Maps Platform

@@ -1,0 +1,90 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  createdAt     DateTime @default(now())
+  email         String   @unique
+  name          String?
+  avatarUrl     String?
+  role          Role     @default(CREATOR)
+  stripeAccount String?  // Stripe Connect acct id
+  lists         List[]
+  orders        Order[]  @relation("BuyerOrders")
+}
+
+enum Role { 
+  ADMIN 
+  CREATOR 
+}
+
+model List {
+  id              String   @id @default(cuid())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  ownerId         String
+  owner           User     @relation(fields: [ownerId], references: [id])
+  title           String
+  slug            String   @unique
+  description     String?
+  coverImageUrl   String?
+  mapsListUrl     String   // The Google Maps List share URL
+  priceCents      Int
+  currency        String   @default("usd")
+  published       Boolean  @default(false)
+  hostedMirror    Boolean  @default(false)
+  placeCount      Int?     // populated if hostedMirror
+  googlePlaceIds  String[] @default([]) // json serialized array of place ids (if mirrored)
+  lastMirrorSync  DateTime?
+  analytics       Json?
+  orders          Order[]
+}
+
+model Order {
+  id              String   @id @default(cuid())
+  createdAt       DateTime @default(now())
+  buyerId         String?  // null if guest pre-checkout; set after fulfillment if matched
+  buyer           User?    @relation("BuyerOrders", fields: [buyerId], references: [id])
+  buyerEmail      String
+  listId          String
+  list            List     @relation(fields: [listId], references: [id])
+  amountCents     Int
+  currency        String
+  stripeSessionId String   @unique
+  stripePaymentId String?  @unique
+  status          OrderStatus @default(PAID)
+  accessGrants    AccessGrant[]
+}
+
+enum OrderStatus { 
+  PAID 
+  REFUNDED 
+  CANCELED 
+}
+
+model AccessGrant {
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  orderId      String
+  order        Order    @relation(fields: [orderId], references: [id])
+  listId       String
+  buyerEmail   String
+  lastAccessAt DateTime?
+  revoked      Boolean  @default(false)
+}
+
+model SessionToken { // JWT jti allowlist for unlock links
+  id        String   @id // jti
+  createdAt DateTime @default(now())
+  orderId   String
+  expiresAt DateTime
+}
