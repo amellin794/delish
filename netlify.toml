@@ -1,10 +1,10 @@
 [build]
-  command = "npm install && npm run build"
+  command = "npm install && npx prisma generate && npm run build"
   publish = ".next"
 
 [build.environment]
-  NODE_VERSION = "18"
-  NPM_VERSION = "9"
+  NODE_VERSION = "20"
+  NPM_VERSION = "10"
 
 # Next.js specific configuration
 [build.processing]
@@ -26,6 +26,7 @@
   from = "/*"
   to = "/index.html"
   status = 200
+  conditions = {Role = ["visitor"]}
 
 # Handle Next.js static files
 [[headers]]
