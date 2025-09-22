@@ -9,9 +9,9 @@ import { formatPrice } from '@/lib/helpers'
 import { CheckoutButton } from '@/components/checkout-button'
 
 interface ListPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 async function getList(slug: string) {
@@ -37,7 +37,8 @@ async function getList(slug: string) {
 }
 
 export async function generateMetadata({ params }: ListPageProps) {
-  const list = await getList(params.slug)
+  const { slug } = await params
+  const list = await getList(slug)
   
   if (!list) {
     return {
@@ -57,7 +58,8 @@ export async function generateMetadata({ params }: ListPageProps) {
 }
 
 export default async function ListPage({ params }: ListPageProps) {
-  const list = await getList(params.slug)
+  const { slug } = await params
+  const list = await getList(slug)
 
   if (!list) {
     notFound()

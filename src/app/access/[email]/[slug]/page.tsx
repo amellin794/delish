@@ -7,10 +7,10 @@ import { MapPin, ExternalLink } from 'lucide-react'
 import { UnlockActions } from '@/components/unlock-actions'
 
 interface AccessPageProps {
-  params: {
+  params: Promise<{
     email: string
     slug: string
-  }
+  }>
 }
 
 async function getAccessData(email: string, slug: string) {
@@ -44,7 +44,8 @@ async function getAccessData(email: string, slug: string) {
 }
 
 export default async function AccessPage({ params }: AccessPageProps) {
-  const accessData = await getAccessData(params.email, params.slug)
+  const { email, slug } = await params
+  const accessData = await getAccessData(email, slug)
 
   if (!accessData) {
     notFound()

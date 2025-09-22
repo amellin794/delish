@@ -9,9 +9,9 @@ import { formatPrice, formatRelativeTime } from '@/lib/helpers'
 import { UnlockActions } from '@/components/unlock-actions'
 
 interface UnlockPageProps {
-  params: {
+  params: Promise<{
     token: string
-  }
+  }>
 }
 
 async function getUnlockData(token: string) {
@@ -90,7 +90,8 @@ export async function generateMetadata({ params }: UnlockPageProps) {
 }
 
 export default async function UnlockPage({ params }: UnlockPageProps) {
-  const unlockData = await getUnlockData(params.token)
+  const { token } = await params
+  const unlockData = await getUnlockData(token)
 
   if (!unlockData) {
     notFound()
